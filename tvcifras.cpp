@@ -16,6 +16,7 @@
 
 #include "tvcifras.h"
 #include "gadgets.h"
+#include "cifradlg.h"
 
 TVCifrasApp::TVCifrasApp()
 	:TProgInit
@@ -34,6 +35,8 @@ TVCifrasApp::TVCifrasApp()
 	r.a.x = r.b.x - 13;     r.a.y = r.b.y - 1;
 	heap = new THeapView( r );
 	insert(heap);
+
+   NewCifraDlg();
 }
 
 TMenuBar *TVCifrasApp::initMenuBar( TRect r )
@@ -42,9 +45,9 @@ TMenuBar *TVCifrasApp::initMenuBar( TRect r )
 	 r.b.y = r.a.y+1;
 
 	 return new TMenuBar( r,
-		*new TSubMenu( "TV~C~ifras", kbAltH ) +
-		  /* *new TMenuItem( "~G~reeting...", GreetThemCmd, kbAltG ) +
-			newLine() + */
+		*new TSubMenu( "TV~C~ifras", kbAltC ) +
+		  *new TMenuItem( "~N~ew Cifra...", NewCifrasDlgCmd, kbAltN ) +
+			newLine() +
 		  *new TMenuItem( "E~x~it", cmQuit, cmQuit, hcNoContext, "Alt-X" )
 		  );
 
@@ -62,15 +65,42 @@ TStatusLine *TVCifrasApp::initStatusLine( TRect r )
 
 void TVCifrasApp::idle()
 {
-    TProgram::idle();
-    clock->update();
-    heap->update();
+	 TProgram::idle();
+	 clock->update();
+	 heap->update();
+} 
+
+void TVCifrasApp::handleEvent( TEvent& event )
+{
+    TApplication::handleEvent( event );
+    if( event.what == evCommand )
+        {
+        switch( event.message.command )
+            {
+				case NewCifrasDlgCmd:
+					 NewCifraDlg();
+                clearEvent( event );
+                break;
+            default:
+                break;
+            }
+        }
+}
+
+void TVCifrasApp::NewCifraDlg()
+{
+	TCifrasDlg *dlg=new TCifrasDlg("prueba");
+
+	deskTop->insert(dlg);
 }
 
 int main()
 {
-	TVCifrasApp app;
-	app.run();
+	TVCifrasApp *app=new TVCifrasApp;
 
-   return 0;
+	app->run();
+
+	TObject::destroy(app);
+
+	return 0;
 }
