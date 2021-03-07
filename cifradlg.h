@@ -6,7 +6,13 @@
 #define Uses_TDialog
 #define Uses_TInputLine
 #define Uses_TStreamable
+#define Uses_TEvent
 #include <tvision\tv.h>
+
+const int ResuelveCmd = 2000;
+const int GeneraLa2Cmd = 2001;
+const int GeneraCanalSurCmd = 2002;
+const int Genera1_100Cmd = 2001;
 
 // Accepts only valid numeric input between Min and Max
 
@@ -57,6 +63,8 @@ class TCifrasDlg : public TDialog
 
 	 //TCifrasDlg( StreamableInit ) : TDialog (streamableInit), TWindowInit(&TForm::initFrame) {};
 	 TCifrasDlg( const char* );
+
+    virtual void handleEvent( TEvent& );
 };
 
 #endif
