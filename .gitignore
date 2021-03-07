@@ -30,3 +30,13 @@
 *.exe
 *.out
 *.app
+
+# bak
+
+*.bak
+*.csm
+*.~de
+
+# vs
+
+*.DSW
