@@ -4,4 +4,10 @@
 
 #define	NUM_NUMEROS	6
 
+class Cifras
+{
+	public:
+   	static const char *NumerosTV[];
+};
+
 #endif

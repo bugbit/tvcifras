@@ -129,9 +129,10 @@ TCifrasDlg::TCifrasDlg( const char *aTitle) :
 		if (c1==NULL)
 			c1=c;
 
-		THistory *h=new THistory( TRect( x1, y, x1+3, y+1 ), (TInputLine *)c, 10 );
+		THistory *h=new THistory( TRect( x1, y, x1+3, y+1 ), (TInputLine *)c, i );
 
-		h->recordHistory("1");
+		for(char **str=(char **)Cifras::NumerosTV;*str;str++)
+			h->recordHistory(*str);
 
 		insert(h);
 	}
