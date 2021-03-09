@@ -4,10 +4,18 @@
 
 #define	NUM_NUMEROS	6
 
+typedef struct _TEnunciado
+{
+	unsigned numero[6];
+   unsigned objetivo;
+} TEnunciado;
+
 class Cifras
 {
 	public:
-   	static const char *NumerosTV[];
+		static const char *numerosTV[];
+	private:
+   	static int grupos[][6];
 };
 
 #endif

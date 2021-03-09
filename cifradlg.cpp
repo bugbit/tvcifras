@@ -15,7 +15,7 @@
 #include <tvision\tv.h>
 #include <string.h>
 #include <stdlib.h>
-#include <strstream.h>
+#include <strstrea.h>
 
 #include "cifradlg.h"
 #include "cifras.h"
@@ -131,7 +131,7 @@ TCifrasDlg::TCifrasDlg( const char *aTitle) :
 
 		THistory *h=new THistory( TRect( x1, y, x1+3, y+1 ), (TInputLine *)c, i );
 
-		for(char **str=(char **)Cifras::NumerosTV;*str;str++)
+		for(char **str=(char **)Cifras::numerosTV;*str;str++)
 			h->recordHistory(*str);
 
 		insert(h);
@@ -180,7 +180,7 @@ TCifrasDlg::TCifrasDlg( const char *aTitle) :
 	insert(c);
 
 	r = TRect(x, y, x + 50, y + 8);
-	d = new TMemo(r, 0, (TScrollBar *) c, 0, 50);
+	d = new TMemo(r, 0, (TScrollBar *) c, 0, ResultadoLength);
 	insert(d);
 
 	y -= 2;
@@ -189,6 +189,21 @@ TCifrasDlg::TCifrasDlg( const char *aTitle) :
 	insert( new TLabel(r, "Resultado del analisis", c));
 
 	selectNext(False);      // Select first field
+
+	/*
+	TCifrasDlgData data;
+
+	strcpy(data.Numeros[0],"111");
+	strcpy(data.Numeros[1],"222");
+	strcpy(data.Numeros[2],"333");
+	strcpy(data.Numeros[3],"444");
+	strcpy(data.Numeros[4],"555");
+	strcpy(data.Numeros[5],"666");
+	strcpy(data.Objetivo,"999");
+	data.Resultado.textLen=strlen("Resultado");
+	strcpy(data.Resultado.textData,"Resultado");
+	setData(&data);
+	*/
 }
 
 void TCifrasDlg::handleEvent( TEvent& event)
@@ -203,4 +218,10 @@ void TCifrasDlg::handleEvent( TEvent& event)
 	}
 
 	TDialog::handleEvent(event);
+
+   // Respond to SAVE button
+	if ( (event.what == evCommand) && (event.message.command == GeneraLa2Cmd) )
+	{
+		clearEvent(event);
+   }
 }
