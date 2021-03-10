@@ -76,14 +76,17 @@ inline opstream& operator << ( opstream& os, TNumInputLine* cl )
     { return os << (TStreamable *)cl; }
 
 
-class TCifrasDlg : public TDialog
+class TCifrasDlg : public TDialog, private Cifras
 {
 	public:
 
-	 //TCifrasDlg( StreamableInit ) : TDialog (streamableInit), TWindowInit(&TForm::initFrame) {};
-	 TCifrasDlg( const char* );
+		//TCifrasDlg( StreamableInit ) : TDialog (streamableInit), TWindowInit(&TForm::initFrame) {};
+		TCifrasDlg( const char* );
 
-    virtual void handleEvent( TEvent& );
+		virtual void handleEvent( TEvent& );
+	private:
+   	void putEnunciado(TEnunciado &e);
+		void generar_random_tv();
 };
 
 #endif

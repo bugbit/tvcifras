@@ -119,6 +119,7 @@ TCifrasDlg::TCifrasDlg( const char *aTitle) :
 	TView *c;
 	TMemo *d;
 
+   randomize();
 	for (int i=0;i++<NUM_NUMEROS;x=x1+4)
 	{
 		x1=x+5;
@@ -223,5 +224,25 @@ void TCifrasDlg::handleEvent( TEvent& event)
 	if ( (event.what == evCommand) && (event.message.command == GeneraLa2Cmd) )
 	{
 		clearEvent(event);
+		generar_random_tv();
    }
+}
+
+void TCifrasDlg::putEnunciado(TEnunciado &e)
+{
+	TCifrasDlgData data;
+
+	getData(&data);
+	for(int i=0;i< NUM_NUMEROS;i++)
+   	itoa(e.numeros[i],data.numeros[i],10);
+	itoa(e.objetivo,data.objetivo,10);
+   setData(&data);
+}
+
+void TCifrasDlg::generar_random_tv()
+{
+	TEnunciado e;
+
+	Cifras::generar_random_tv(e);
+   putEnunciado(e);
 }
