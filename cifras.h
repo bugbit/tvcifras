@@ -2,11 +2,13 @@
 
 #define	__CIFRAS_H
 
+#include <stdlib.h>
+
 #define	NUM_NUMEROS	6
 
 typedef struct _TEnunciado
 {
-	unsigned numeros[6];
+	unsigned numeros[NUM_NUMEROS];
    unsigned objetivo;
 } TEnunciado;
 
@@ -15,7 +17,9 @@ class Cifras
 	public:
 		static const char *numerosTV[];
 
-      void generar_random_tv(TEnunciado &e) const;
+		void generar_random_tv(TEnunciado &e) const;
+		void generar_random_canalsur(TEnunciado &e) const;
+      void generar_random_1_100(TEnunciado &e) const;
 	private:
 		static unsigned grupos[][6];
 
@@ -27,6 +31,10 @@ class Cifras
 		void mezclargr(unsigned *result) const;
 		unsigned obtnumero(unsigned *result,int grupo) const;
 		int randomgrupo(int n123,int num) const;
+      inline void randomobjetivo(TEnunciado &e) const
+		{
+			e.objetivo=100+random(900);
+		}
 };
 
 #endif

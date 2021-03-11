@@ -93,10 +93,39 @@ void Cifras::generar_random_tv(TEnunciado &e) const
 	int grupo;
 
 	mezclargr((unsigned *) &result);
-	for (i=0;i<6;i++)
+	for (i=0;i<NUM_NUMEROS;i++)
 	{
 		grupo=randomgrupo(0,0);
-      e.numeros[i]=obtnumero((unsigned *) &result,grupo);
+		e.numeros[i]=obtnumero((unsigned *) &result,grupo);
 	}
-   e.objetivo=100+random(900);
+	randomobjetivo(e);
+}
+
+void Cifras::generar_random_canalsur(TEnunciado &e) const
+{
+	unsigned result[4][7];
+	int i;
+	int n123=0;
+	int grupo;
+
+	mezclargr((unsigned *) &result);
+	for (i=0;i<NUM_NUMEROS;i++)
+	{
+		grupo=randomgrupo(n123,i+1);
+		e.numeros[i]=obtnumero((unsigned *) &result,grupo);
+		if (grupo<4)
+			n123++;
+	}
+	randomobjetivo(e);
+}
+
+void Cifras::generar_random_1_100(TEnunciado &e) const
+{
+	int i;
+
+	for (i=0;i<NUM_NUMEROS;i++)
+	{
+		e.numeros[i]=random(100)+1;
+	}
+	randomobjetivo(e);
 }

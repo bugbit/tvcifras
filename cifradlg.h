@@ -2,6 +2,8 @@
 
 #define __CIFRADLG_H
 
+#include <strstrea.h>
+
 #define Uses_TRect
 #define Uses_TDialog
 #define Uses_TInputLine
@@ -16,7 +18,7 @@ const int ResultadoLength=512;
 const int ResuelveCmd = 2000;
 const int GeneraLa2Cmd = 2001;
 const int GeneraCanalSurCmd = 2002;
-const int Genera1_100Cmd = 2001;
+const int Genera1_100Cmd = 2003;
 
 typedef char TNumeroRec[4];
 
@@ -85,8 +87,12 @@ class TCifrasDlg : public TDialog, private Cifras
 
 		virtual void handleEvent( TEvent& );
 	private:
-   	void putEnunciado(TEnunciado &e);
+		Boolean setEnunciado(TEnunciado &e,ostrstream &out);
+		void resuelve();
+		void putEnunciado(TEnunciado &e);
 		void generar_random_tv();
+		void generar_random_canalsur();
+      void generar_random_1_100();
 };
 
 #endif

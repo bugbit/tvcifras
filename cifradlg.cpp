@@ -1,3 +1,4 @@
+#define Uses_TWindow
 #define Uses_TDialog
 #define Uses_TRect
 #define Uses_TLabel
@@ -54,7 +55,7 @@ TStreamableClass RNumInputLine( TNumInputLine::name,
 TNumInputLine::TNumInputLine( const TRect& bounds,
 			      int aMaxLen,
 			      long aMin,
-			      long aMax ) :
+					long aMax ) :
     TInputLine(bounds, aMaxLen)
 {
     min = aMin;
@@ -94,11 +95,11 @@ Boolean TNumInputLine::valid( ushort command )
         if ( (value == 0) || (value < min) || (value > max) )
             {
             select();
-            os << "Number must be from " << min << " to " << max << "." << ends;
+				os << "Number must be from " << min << " to " << max << "." << ends;
 				messageBox(os.str(), mfError + mfOKButton);
 				selectAll(True);
 				ok = False;
-            }
+				}
 		  }
 	 if (ok)
 		  return TInputLine::valid(command);
@@ -151,22 +152,27 @@ TCifrasDlg::TCifrasDlg( const char *aTitle) :
 	insert(c);
 
 	x += 7;
-	int wBtn=10;
+	int wBtn=12;
 
 	r = TRect(x, y, x+wBtn, y + 2);
 	insert( new TButton(r, "~R~esuelve", ResuelveCmd, bfDefault));
+	x += wBtn+1;
+
+	wBtn=11;
+	r = TRect(x, y, x+wBtn, y + 2);
+	insert( new TButton(r, "Ge. ~L~a2", GeneraLa2Cmd, bfDefault));
+	x += wBtn+1;
+
+	wBtn=9;
+
+	r = TRect(x, y, x+wBtn, y + 2);
+	insert( new TButton(r, "~C~.Sur", GeneraCanalSurCmd, bfDefault));
 
 	x += wBtn+1;
-	r = TRect(x, y, x+wBtn, y + 2);
-	insert( new TButton(r, "Genera ~L~a2", GeneraLa2Cmd, bfDefault));
 
-	x += wBtn+1;
+	wBtn=11;
 	r = TRect(x, y, x+wBtn, y + 2);
-	insert( new TButton(r, "Genera ~C~analSur", GeneraCanalSurCmd, bfDefault));
-
-	x += wBtn+1;
-	r = TRect(x, y, x+wBtn, y + 2);
-	insert( new TButton(r, "~G~enera 1-100", Genera1_100Cmd, bfDefault));
+	insert( new TButton(r, "~G~.1-100", Genera1_100Cmd, bfDefault));
 
 	y -= 2;
 
@@ -220,12 +226,78 @@ void TCifrasDlg::handleEvent( TEvent& event)
 
 	TDialog::handleEvent(event);
 
-   // Respond to SAVE button
-	if ( (event.what == evCommand) && (event.message.command == GeneraLa2Cmd) )
+	// Respond to SAVE button
+	if (event.what == evCommand)
 	{
-		clearEvent(event);
-		generar_random_tv();
-   }
+		switch(event.message.command)
+		{
+			case ResuelveCmd:
+				clearEvent(event);
+				resuelve();
+				break;
+			case GeneraLa2Cmd:
+				clearEvent(event);
+				generar_random_tv();
+				break;
+			case GeneraCanalSurCmd:
+				clearEvent(event);
+				generar_random_canalsur();
+				break; 
+			case Genera1_100Cmd:
+				clearEvent(event);
+				generar_random_1_100();
+				break;
+		}
+	}
+}
+
+Boolean TCifrasDlg::setEnunciado(TEnunciado &e,ostrstream &out)
+{
+	TCifrasDlgData data;
+	unsigned numero;
+	Boolean ok=True;
+
+	getData(&data);
+	for(int i=0;i< NUM_NUMEROS;i++)
+	{
+		numero=atoi(data.numeros[i]);
+		if (numero<1 || numero>100)
+		{
+			if (out.pcount()>0)
+				out << endl;
+			out << "El numero " << (i+1) << " tiene que estar entre 1-100";
+			ok=False;
+		}
+		e.numeros[i]=numero;
+	}
+	numero=atoi(data.objetivo);
+	if (numero<100 || numero>999)
+	{
+		if (out.pcount()>0)
+			out << endl;
+		out << "El objetivo tiene que estar entre 100-999";
+		ok=False;
+	}
+	if (!ok)
+		out << ends;
+
+	return ok;
+}
+
+void TCifrasDlg::resuelve()
+{
+	TEnunciado e;
+	ostrstream out;
+
+	if (!setEnunciado(e,out))
+	{
+		messageBox(out.str(), mfError + mfOKButton);
+
+		return;
+	}
+	TWindow *dlg=new TWindow(TRect(20,3,40,5),"",0);
+	dlg->insert(new TLabel(TRect(22,4,38,5), "Resolviendo ...", NULL));
+	insert(dlg);
 }
 
 void TCifrasDlg::putEnunciado(TEnunciado &e)
@@ -234,9 +306,9 @@ void TCifrasDlg::putEnunciado(TEnunciado &e)
 
 	getData(&data);
 	for(int i=0;i< NUM_NUMEROS;i++)
-   	itoa(e.numeros[i],data.numeros[i],10);
+		itoa(e.numeros[i],data.numeros[i],10);
 	itoa(e.objetivo,data.objetivo,10);
-   setData(&data);
+	setData(&data);
 }
 
 void TCifrasDlg::generar_random_tv()
@@ -244,5 +316,21 @@ void TCifrasDlg::generar_random_tv()
 	TEnunciado e;
 
 	Cifras::generar_random_tv(e);
-   putEnunciado(e);
+	putEnunciado(e);
+}
+
+void TCifrasDlg::generar_random_canalsur()
+{
+	TEnunciado e;
+
+	Cifras::generar_random_canalsur(e);
+	putEnunciado(e);
+}
+
+void TCifrasDlg::generar_random_1_100()
+{
+	TEnunciado e;
+
+	Cifras::generar_random_1_100(e);
+	putEnunciado(e);
 }
