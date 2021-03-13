@@ -4,13 +4,69 @@
 
 #include <stdlib.h>
 
+#define Uses_TNSSortedCollection
+#include <tvision\tv.h>
+
 #define	NUM_NUMEROS	6
+
+enum EOperaciones { Ninguna,Suma,Multiplicacion,Resta,Division,Op1=Suma,OpL=Division };
 
 typedef struct _TEnunciado
 {
 	unsigned numeros[NUM_NUMEROS];
-   unsigned objetivo;
+	unsigned objetivo;
 } TEnunciado;
+
+class Numero : public TObject
+{
+	public:
+		unsigned numero;
+
+		inline Numero(unsigned _numero) { numero=_numero; }
+};
+
+class Operacion : public Numero
+{
+	public:
+		EOperaciones Operacion;
+		unsigned numero1,numero2;
+
+		inline Operacion(unsigned _numero):Numero(_numero){}
+};
+
+class NumeroCollection : public TNSSortedCollection
+{
+	public:
+		inline NumeroCollection(ccIndex aLimit):TNSSortedCollection(aLimit,0){}
+		inline virtual ccIndex insert( Numero *tc )
+		{
+			return TNSSortedCollection::insert( tc );
+		}
+
+		virtual void *keyOf(void *item);
+
+	private:
+
+   	virtual int compare( void *key1, void *key2);
+		virtual void freeItem( void *item );
+};
+
+class Estado
+{
+	public:
+		NumeroCollection *numeros;
+		EOperaciones operacion;
+		int i,j;
+		Estado *next;
+
+		static Estado *stack;
+
+		Estado(NumeroCollection *n,EOperaciones op,int ii,int jj);
+		~Estado();
+
+		static void push(Estado *e);
+		static Estado *pop();
+};
 
 class Cifras
 {
@@ -19,7 +75,8 @@ class Cifras
 
 		void generar_random_tv(TEnunciado &e) const;
 		void generar_random_canalsur(TEnunciado &e) const;
-      void generar_random_1_100(TEnunciado &e) const;
+		void generar_random_1_100(TEnunciado &e) const;
+      Numero *resolver(TEnunciado &e) const;
 	private:
 		static unsigned grupos[][6];
 
@@ -35,6 +92,7 @@ class Cifras
 		{
 			e.objetivo=100+random(900);
 		}
+      Numero *resolver();
 };
 
 #endif

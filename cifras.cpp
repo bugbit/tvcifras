@@ -3,6 +3,56 @@
 #include <mem.h>
 #include "cifras.h"
 
+void *NumeroCollection::keyOf(void *item)
+{
+	return &((Numero *) item)->numero;
+}
+
+int NumeroCollection::compare( void *key1, void *key2)
+{
+	return *(unsigned *) key2-*(unsigned *) key1;
+}
+
+void NumeroCollection::freeItem( void *item )
+{
+	delete (Numero *) item;
+}
+
+Estado::Estado(NumeroCollection *n,EOperaciones op,int ii,int jj)
+{
+	numeros=n;
+	operacion=op;
+	i=ii;
+	j=jj;
+}
+
+Estado *Estado::stack=NULL;
+
+void Estado::push(Estado *e)
+{
+	if (stack!=NULL)
+		e->next=stack;
+	stack=e;
+	e->next=NULL;
+}
+
+Estado *Estado::pop()
+{
+	if (stack==NULL)
+		return NULL;
+
+	Estado *e=stack;
+	stack=e->next;
+
+   return e;
+}
+
+Estado::~Estado()
+{
+	if (numeros!=NULL)
+		delete numeros;
+}
+
 const char *Cifras::numerosTV[]=
 {
 	"1","2","3","4","5","6","7","8","9","10","25","50","75","100",NULL
@@ -128,4 +178,56 @@ void Cifras::generar_random_1_100(TEnunciado &e) const
 		e.numeros[i]=random(100)+1;
 	}
 	randomobjetivo(e);
+}
+
+Numero *Cifras::resolver(TEnunciado &e) const
+{
+	NumeroCollection *c=new NumeroCollection(NUM_NUMEROS);
+	unsigned *n=e.numeros;
+
+	for (int i=i<NUM_NUMEROS;i-->0;)
+		c->insert(new Numero(*n++));
+
+	Estado *st=new Estado(c,Op1,0,0);
+
+	Estado::push(st);
+
+	Numero *num=resolver();
+
+	delete st;
+
+	return num;
+}
+
+Numero *Cifras::resolver()
+{
+	for(;;)
+	{
+		Estado *st=Estado::pop();
+
+		if (st==NULL)
+			return NULL;
+
+		if (++st->j>=st->numeros->getCount())
+		{
+			if (++st->i>=st->numeros->getCount()-1)
+				st->j=st->i+1;
+			else
+			{
+			/*
+				++st->operacion;
+				if (++st->operacion>OpL)
+				{
+					delete st;
+
+					continue;
+				}
+				else
+					st->i=st->j=0;
+			*/
+			}
+		}
+	}
+
+	return NULL;
 }

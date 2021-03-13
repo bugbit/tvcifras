@@ -1,3 +1,4 @@
+#define Uses_TFrame
 #define Uses_TWindow
 #define Uses_TDialog
 #define Uses_TRect
@@ -295,8 +296,12 @@ void TCifrasDlg::resuelve()
 
 		return;
 	}
-	TWindow *dlg=new TWindow(TRect(20,3,40,5),"",0);
-	dlg->insert(new TLabel(TRect(22,4,38,5), "Resolviendo ...", NULL));
+	//insert(new TLabel(TRect(22,4,38,6), "Resolviendo ...", NULL));
+
+	TWindow *dlg=new TWindow(TRect(20,3,40,6),NULL,0);
+	dlg->insert(new TLabel(TRect(1,1,18,2), "Resolviendo ...", NULL));
+   dlg->flags=0;
+	dlg->options |= ofCentered|ofTileable;
 	insert(dlg);
 }
 
