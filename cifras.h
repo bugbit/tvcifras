@@ -59,13 +59,25 @@ class Estado
 		int i,j;
 		Estado *next;
 
-		static Estado *stack;
-
+		Estado(NumeroCollection *n);
 		Estado(NumeroCollection *n,EOperaciones op,int ii,int jj);
 		~Estado();
 
-		static void push(Estado *e);
-		static Estado *pop();
+		void init();
+		void initIJ();
+		Boolean nextComb();
+};
+
+class StackSt
+{
+	public:
+		inline StackSt():stack(NULL){}
+      inline ~StackSt(){ free(); }
+		void push(Estado *e);
+		Estado *pop();
+		void free();
+	private:
+		Estado *stack;
 };
 
 class Cifras
@@ -76,7 +88,7 @@ class Cifras
 		void generar_random_tv(TEnunciado &e) const;
 		void generar_random_canalsur(TEnunciado &e) const;
 		void generar_random_1_100(TEnunciado &e) const;
-      Numero *resolver(TEnunciado &e) const;
+		Numero *resolver(TEnunciado &e) const;
 	private:
 		static unsigned grupos[][6];
 
@@ -92,7 +104,7 @@ class Cifras
 		{
 			e.objetivo=100+random(900);
 		}
-      Numero *resolver();
+      Numero *resolver(StackSt &stack) const;
 };
 
 #endif

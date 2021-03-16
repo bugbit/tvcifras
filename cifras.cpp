@@ -18,6 +18,12 @@ void NumeroCollection::freeItem( void *item )
 	delete (Numero *) item;
 }
 
+Estado::Estado(NumeroCollection *n)
+{
+	numeros=n;
+   init();
+}
+
 Estado::Estado(NumeroCollection *n,EOperaciones op,int ii,int jj)
 {
 	numeros=n;
@@ -26,9 +32,44 @@ Estado::Estado(NumeroCollection *n,EOperaciones op,int ii,int jj)
 	j=jj;
 }
 
-Estado *Estado::stack=NULL;
+Estado::~Estado()
+{
+	if (numeros!=NULL)
+		delete numeros;
+}
 
-void Estado::push(Estado *e)
+void Estado::init()
+{
+	operacion=Op1;
+	initIJ();
+}
+
+void Estado::initIJ()
+{
+	i=0;
+	j=-1;
+}
+
+Boolean Estado::nextComb()
+{
+	if (++j>=numeros->getCount())
+	{
+		if (++i>=numeros->getCount()-1)
+			j=i+1;
+		else
+		{
+			operacion++;
+			if (operacion>OpL)
+				return False;
+
+			initIJ();
+		}
+	}
+
+   return True;
+}
+
+void StackSt::push(Estado *e)
 {
 	if (stack!=NULL)
 		e->next=stack;
@@ -36,7 +77,7 @@ void Estado::push(Estado *e)
 	e->next=NULL;
 }
 
-Estado *Estado::pop()
+Estado *StackSt::pop()
 {
 	if (stack==NULL)
 		return NULL;
@@ -47,10 +88,9 @@ Estado *Estado::pop()
    return e;
 }
 
-Estado::~Estado()
+void StackSt::free()
 {
-	if (numeros!=NULL)
-		delete numeros;
+	while(pop());
 }
 
 const char *Cifras::numerosTV[]=
@@ -188,44 +228,30 @@ Numero *Cifras::resolver(TEnunciado &e) const
 	for (int i=i<NUM_NUMEROS;i-->0;)
 		c->insert(new Numero(*n++));
 
-	Estado *st=new Estado(c,Op1,0,0);
+	Estado *st=new Estado(c);
+	StackSt stack;
 
-	Estado::push(st);
+	stack.push(st);
 
-	Numero *num=resolver();
-
-	delete st;
+	Numero *num=resolver(stack);
 
 	return num;
 }
 
-Numero *Cifras::resolver()
+Numero *Cifras::resolver(StackSt &stack) const
 {
 	for(;;)
 	{
-		Estado *st=Estado::pop();
+		Estado *st=stack.pop();
 
 		if (st==NULL)
 			return NULL;
 
-		if (++st->j>=st->numeros->getCount())
+		if (!st->nextComb())
 		{
-			if (++st->i>=st->numeros->getCount()-1)
-				st->j=st->i+1;
-			else
-			{
-			/*
-				++st->operacion;
-				if (++st->operacion>OpL)
-				{
-					delete st;
+			delete st;
 
-					continue;
-				}
-				else
-					st->i=st->j=0;
-			*/
-			}
+			continue;
 		}
 	}
 
