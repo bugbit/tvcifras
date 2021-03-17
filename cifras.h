@@ -20,9 +20,11 @@ typedef struct _TEnunciado
 class Numero : public TObject
 {
 	public:
-		unsigned numero;
-
 		inline Numero(unsigned _numero) { numero=_numero; }
+		inline unsigned getNumero() const { return numero; }
+	protected:
+
+		unsigned numero;
 };
 
 class Operacion : public Numero
@@ -47,37 +49,58 @@ class NumeroCollection : public TNSSortedCollection
 
 	private:
 
-   	virtual int compare( void *key1, void *key2);
+		virtual int compare( void *key1, void *key2);
 		virtual void freeItem( void *item );
 };
 
 class Estado
 {
 	public:
-		NumeroCollection *numeros;
-		EOperaciones operacion;
-		int i,j;
-		Estado *next;
-
 		Estado(NumeroCollection *n);
 		Estado(NumeroCollection *n,EOperaciones op,int ii,int jj);
 		~Estado();
 
+		inline void setNext(Estado *st) { next=st; }
+		inline Estado *getNext() const { return next; }
+		inline NumeroCollection *getNumeros() const { return numeros; }
 		void init();
 		void initIJ();
 		Boolean nextComb();
+	private:
+		NumeroCollection *numeros;
+		EOperaciones operacion;
+		int i,j;
+		Estado *next;
 };
 
 class StackSt
 {
 	public:
 		inline StackSt():stack(NULL){}
-      inline ~StackSt(){ free(); }
+		inline ~StackSt(){ free(); }
 		void push(Estado *e);
 		Estado *pop();
 		void free();
 	private:
 		Estado *stack;
+};
+
+class Resuelve
+{
+	public:
+		Resuelve();
+		void resolver(TEnunciado &e);
+
+		inline Numero *getSolucion() const { return solucion; }
+	private:
+		StackSt stack;
+		unsigned objetivo;
+		Numero *solucion;
+		unsigned dist;
+
+		void resolver();
+		Boolean resolver(Estado &st);
+		Boolean resolver1N(Numero *n);
 };
 
 class Cifras
@@ -100,11 +123,10 @@ class Cifras
 		void mezclargr(unsigned *result) const;
 		unsigned obtnumero(unsigned *result,int grupo) const;
 		int randomgrupo(int n123,int num) const;
-      inline void randomobjetivo(TEnunciado &e) const
+		inline void randomobjetivo(TEnunciado &e) const
 		{
 			e.objetivo=100+random(900);
 		}
-      Numero *resolver(StackSt &stack) const;
 };
 
 #endif

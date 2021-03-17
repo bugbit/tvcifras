@@ -5,12 +5,12 @@
 
 void *NumeroCollection::keyOf(void *item)
 {
-	return &((Numero *) item)->numero;
+	return (void *)((Numero *) item)->getNumero();
 }
 
 int NumeroCollection::compare( void *key1, void *key2)
 {
-	return *(unsigned *) key2-*(unsigned *) key1;
+	return (unsigned *) key2-(unsigned *) key1;
 }
 
 void NumeroCollection::freeItem( void *item )
@@ -72,9 +72,9 @@ Boolean Estado::nextComb()
 void StackSt::push(Estado *e)
 {
 	if (stack!=NULL)
-		e->next=stack;
+		e->setNext(stack);
 	stack=e;
-	e->next=NULL;
+	e->setNext(NULL);
 }
 
 Estado *StackSt::pop()
@@ -83,14 +83,86 @@ Estado *StackSt::pop()
 		return NULL;
 
 	Estado *e=stack;
-	stack=e->next;
+	stack=e->getNext();
 
-   return e;
+	return e;
 }
 
 void StackSt::free()
 {
 	while(pop());
+}
+
+Resuelve::Resuelve():stack(),solucion(NULL),dist(0xFFFF) {}
+
+void Resuelve::resolver(TEnunciado &e)
+{
+	NumeroCollection *c=new NumeroCollection(NUM_NUMEROS);
+	unsigned *n=e.numeros;
+
+	for (int i=i<NUM_NUMEROS;i-->0;)
+		c->insert(new Numero(*n++));
+
+	Estado *st=new Estado(c);
+
+	stack.push(st);
+	objetivo=e.objetivo;
+}
+
+void Resuelve::resolver()
+{
+	for(;;)
+	{
+		Estado *st=stack.pop();
+
+		if (st==NULL)
+			return;
+
+		if (!st->nextComb())
+		{
+			delete st;
+
+			continue;
+		}
+
+		if (resolver(*st))
+			return;
+	}
+}
+
+Boolean Resuelve::resolver(Estado &st)
+{
+	NumeroCollection *n=st.getNumeros();
+
+	switch(n->getCount())
+	{
+		case 1:
+			return resolver1N((Numero *) n->at(0));
+		case 2:
+		default:
+			return False;
+	}
+
+	return False;
+}
+
+Boolean Resuelve::resolver1N(Numero *n)
+{
+	unsigned numero=n->getNumero();
+
+	if (numero==objetivo)
+	{
+		solucion=n;
+      dist=0;
+
+		return True;
+	}
+
+	if (solucion==NULL)
+		solucion=n;
+	//else if (abs(soluc))
+
+	return False;
 }
 
 const char *Cifras::numerosTV[]=
@@ -222,38 +294,9 @@ void Cifras::generar_random_1_100(TEnunciado &e) const
 
 Numero *Cifras::resolver(TEnunciado &e) const
 {
-	NumeroCollection *c=new NumeroCollection(NUM_NUMEROS);
-	unsigned *n=e.numeros;
+	Resuelve r;
 
-	for (int i=i<NUM_NUMEROS;i-->0;)
-		c->insert(new Numero(*n++));
+	r.resolver(e);
 
-	Estado *st=new Estado(c);
-	StackSt stack;
-
-	stack.push(st);
-
-	Numero *num=resolver(stack);
-
-	return num;
-}
-
-Numero *Cifras::resolver(StackSt &stack) const
-{
-	for(;;)
-	{
-		Estado *st=stack.pop();
-
-		if (st==NULL)
-			return NULL;
-
-		if (!st->nextComb())
-		{
-			delete st;
-
-			continue;
-		}
-	}
-
-	return NULL;
+	return r.getSolucion();
 }
