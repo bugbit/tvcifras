@@ -30,10 +30,14 @@ class Numero : public TObject
 class Operacion : public Numero
 {
 	public:
-		EOperaciones Operacion;
-		unsigned numero1,numero2;
-
 		inline Operacion(unsigned _numero):Numero(_numero){}
+		Operacion(EOperaciones op,unsigned n1,unsigned n2,unsigned n);
+
+		static Operacion *Calc(EOperaciones op,unsigned n1,unsigned n2);
+
+	private:
+		EOperaciones operacion;
+		unsigned numero1,numero2;
 };
 
 class NumeroCollection : public TNSSortedCollection

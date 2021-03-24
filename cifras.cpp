@@ -1,7 +1,41 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <mem.h>
+#include <math.h>
 #include "cifras.h"
+
+Operacion::Operacion(EOperaciones op,unsigned n1,unsigned n2,unsigned n):
+Numero(n),operacion(op),numero1(n1),numero2(n2){}
+
+Operacion *Operacion::Calc(EOperaciones op,unsigned n1,unsigned n2)
+{
+	unsigned n;
+
+	switch(op)
+	{
+		case Suma:
+			n=n1+n2;
+			break;
+		case Resta:
+			if (n1>n2)
+				return NULL;
+			n=n1-n2;
+			break;
+		case Multiplicacion:
+			n=n1*n2;
+			break;
+		case Division:
+			div_t d=div(n1,n2);
+
+			if (d.rem!=0)
+				return NULL;
+
+			n=d.quot;
+			break;
+	}
+
+	return new Operacion(op,n1,n2,n);
+}
 
 void *NumeroCollection::keyOf(void *item)
 {
@@ -149,20 +183,16 @@ Boolean Resuelve::resolver(Estado &st)
 Boolean Resuelve::resolver1N(Numero *n)
 {
 	unsigned numero=n->getNumero();
+	unsigned dist2=abs(numero);
+	Boolean encon=dist2==0;
 
-	if (numero==objetivo)
+	if (encon || solucion==NULL || dist2<dist)
 	{
 		solucion=n;
-      dist=0;
-
-		return True;
+		dist=dist2;
 	}
 
-	if (solucion==NULL)
-		solucion=n;
-	//else if (abs(soluc))
-
-	return False;
+	return encon;
 }
 
 const char *Cifras::numerosTV[]=
